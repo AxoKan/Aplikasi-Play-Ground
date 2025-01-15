@@ -86,7 +86,7 @@
                         <div class="progress-detail mt-3 text-center">
                            <p class="mb-1" style="font-size: 1.2rem;">Total Pelanggan</p>
                            <h4 class="counter" style="font-size: 1.5rem;"><?= $jumlah_pelanggan ?></h4>
-                           <a href="<?=base_url('pelanggan')?>" class="btn btn-outline-info rounded-pill mt-3 btn-lg">Detail</a>
+                           <a href="<?=base_url('home/pelanggan')?>" class="btn btn-outline-info rounded-pill mt-3 btn-lg">Detail</a>
                         </div>
                      </div>
                   </div>
@@ -100,7 +100,7 @@
                         <div class="progress-detail mt-3 text-center">
                            <p class="mb-1" style="font-size: 1.2rem;">Total Transaksi</p>
                            <h4 class="counter" style="font-size: 1.5rem;"><?= $jumlah_transaksi ?></h4>
-                           <a href="<?=base_url('transaksi')?>" class="btn btn-outline-success rounded-pill mt-3 btn-lg">Detail</a>
+                           <a href="<?=base_url('home/transaksi')?>" class="btn btn-outline-success rounded-pill mt-3 btn-lg">Detail</a>
                         </div>
                      </div>
                   </div>

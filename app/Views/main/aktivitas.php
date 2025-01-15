@@ -153,69 +153,61 @@
 
 
     <script>
-    <?php foreach ($masih_bermain as $id_transaksi => $durasi): ?>
-        var endTime_<?= $id_transaksi ?> = <?= time() + $durasi ?> * 1000; // Convert to milliseconds
-        startCountdownTimer(<?= $id_transaksi ?>, endTime_<?= $id_transaksi ?>, "<?= $sa->NamaPelanggan ?>");
-    <?php endforeach; ?>
-
-    // Fungsi untuk memulai timer countdown
-    function startCountdownTimer(id, endTime, namaPelanggan) {
-        var timerId;
-
-        function updateCountdown() {
-            var now = new Date().getTime();
-            var distance = endTime - now;
-
-            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Format angka jam, menit, dan detik agar menampilkan dua digit
-            var hoursFormatted = hours.toString().padStart(2, '0');
-            var minutesFormatted = minutes.toString().padStart(2, '0');
-            var secondsFormatted = seconds.toString().padStart(2, '0');
-
-            document.getElementById('countdown_' + id).innerHTML = hoursFormatted + ":" + minutesFormatted + ":" + secondsFormatted;
-
-            // Periksa apakah durasi telah mencapai 00:00:00
-            if (distance <= 0) {
-                clearInterval(timerId); // Hentikan timer countdown
-
-                // Buat pengumuman dengan Text-to-Speech
-                announceFinish(namaPelanggan);
-
-                // Ambil ID transaksi dari hidden input
-                var hiddenId = document.getElementById('hidden_id_' + id).value;
-
-                // Redirect ke halaman status dengan id_transaksi sebagai parameter
-                setTimeout(function () {
-                    window.location.href = "<?= base_url('Home/status') ?>/" + hiddenId;
-                }, 5000); // Tunggu 5 detik sebelum redirect
-            }
-        }
-
-        // Panggil fungsi updateCountdown setiap detik
-        timerId = setInterval(updateCountdown, 1000);
-
-        // Mulai countdown saat halaman dimuat
-        updateCountdown();
-    }
-
-    // Fungsi untuk pengumuman dengan Text-to-Speech
-    function announceFinish(namaPelanggan) {
-        var announcement = namaPelanggan + " duration has finished.";
-        var utterance = new SpeechSynthesisUtterance(announcement);
-        speechSynthesis.speak(utterance);
-    }
-</script>
-
+// Loop through all active transactions
 <?php foreach ($masih_bermain as $id_transaksi => $durasi): ?>
-    <!-- Hidden inputs untuk ID transaksi -->
-    <input type="hidden" id="hidden_id_<?= $id_transaksi ?>" value="<?= $id_transaksi ?>">
-    <!-- Elemen untuk menampilkan countdown -->
-    <div id="countdown_<?= $id_transaksi ?>"></div>
+    var endTime_<?= $id_transaksi ?> = <?= time() + $durasi ?> * 1000; // Convert to milliseconds
+    var customerName_<?= $id_transaksi ?> = "<?= $sa[$id_transaksi]->NamaPelanggan ?>";  // Get customer name from DB
+    var rideName_<?= $id_transaksi ?> = "<?= $sa[$id_transaksi]->nama_permainan ?>";  // Get ride name from DB
+
+    startCountdownTimer(<?= $id_transaksi ?>, endTime_<?= $id_transaksi ?>, customerName_<?= $id_transaksi ?>, rideName_<?= $id_transaksi ?>);
 <?php endforeach; ?>
 
+// Function to start the countdown timer
+function startCountdownTimer(id, endTime, customerName, rideName) {
+    var timerId;
+
+    function updateCountdown() {
+        var now = new Date().getTime();
+        var distance = endTime - now;
+
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        // Format hours, minutes, and seconds to always show two digits
+        var hoursFormatted = hours.toString().padStart(2, '0');
+        var minutesFormatted = minutes.toString().padStart(2, '0');
+        var secondsFormatted = seconds.toString().padStart(2, '0');
+
+        document.getElementById('countdown_' + id).innerHTML = hoursFormatted + ":" + minutesFormatted + ":" + secondsFormatted;
+
+        // Check if the countdown has finished
+        if (distance <= 0) {
+            clearInterval(timerId); // Stop the countdown timer
+
+            // Announcement: Create the message for VoiceRSS
+            var message = "Waktu untuk anak " + customerName + " pada wahana " + rideName + " sudah habis!";
+
+            // Call the VoiceRSS API for the announcement
+            var voiceRSSUrl = 'https://api.voicerss.org/';
+            var voiceApiKey = 'fbb172cb64bc4683a31be7f4f9a3ccf4'; // Replace with your VoiceRSS API key
+
+            var audio = new Audio(`${voiceRSSUrl}?key=${voiceApiKey}&hl=id-id&src=${encodeURIComponent(message)}&r=0&c=mp3`);
+            audio.play(); // Play the audio
+
+            // Redirect to the status page after the announcement
+            var hiddenId = document.getElementById('hidden_id_' + id).value;
+            window.location.href = "<?= base_url('Home/status') ?>/" + hiddenId;
+        }
+    }
+
+    // Call the updateCountdown function every second
+    timerId = setInterval(updateCountdown, 1000);
+
+    // Start the countdown immediately on page load
+    updateCountdown();
+}
+</script>
 
 
 </div>

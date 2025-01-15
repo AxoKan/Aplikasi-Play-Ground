@@ -825,6 +825,7 @@ public function aksi_create()
         $d = $this->request->getPost('durasi');
         $e = $this->request->getPost('total');
         $f = $this->request->getPost('bayar');
+        $h = $this->request->getPost('permainan');
         $g = $this->request->getPost('kembalian');
 
 
@@ -837,6 +838,7 @@ public function aksi_create()
         // Data to insert into the database
         $isi = array(
             'pelanggan_id' => $c,
+            'permainan_id' => $h,
             'tanggal_transaksi' => date('Y-m-d'),
             'jam_mulai' => $jamMulai,
             'jam_selesai' => $jamSelesai,
@@ -879,8 +881,9 @@ public function aktivitas()
         $data['user']=$model->getWhere('user', $where);
             
 
-        $data['sa'] = $model->joinThreeTables('transaksi','pelanggan','user',
+        $data['sa'] = $model->joinFourTable('transaksi','pelanggan','permainan','user',
 'transaksi.pelanggan_id=pelanggan.PelangganID',
+'transaksi.permainan_id=permainan.id_permainan',
 'transaksi.user=user.id_user',
 );
 
