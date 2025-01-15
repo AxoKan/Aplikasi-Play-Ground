@@ -55,6 +55,7 @@
         <td align="center" scope="col">
           <div style="display: flex; gap: 10px; justify-content: center;">
             <a class="btn btn-danger" href="<?= base_url('home/DelTrans/'.$key->id_transaksi ) ?>">Delete</a>
+            <a class="btn btn-warning" href="https://wa.me/<?= $key->NomorTelepon ?>?text=Durasi%20Axo%20Happy%20Playground%20Mu%20Tela%20Selesai,%20Harap%20Segera%20Menjemput%20AnakAnda" target="_blank">wa</a>
 
           </div>
         </td>

@@ -123,7 +123,7 @@ class Home extends BaseController
                $model->logActivity($user_id, 'Updated', 'User Has Updated The Logo');
                $model->edit('logo', $data, $where);
            
-               return redirect()->to('admin/setting/1');
+               return redirect()->to('setting/1');
            }
 		   public function dashboard()
 	{

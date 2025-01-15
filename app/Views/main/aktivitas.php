@@ -155,11 +155,11 @@
     <script>
     <?php foreach ($masih_bermain as $id_transaksi => $durasi): ?>
         var endTime_<?= $id_transaksi ?> = <?= time() + $durasi ?> * 1000; // Convert to milliseconds
-        startCountdownTimer(<?= $id_transaksi ?>, endTime_<?= $id_transaksi ?>);
+        startCountdownTimer(<?= $id_transaksi ?>, endTime_<?= $id_transaksi ?>, "<?= $sa->NamaPelanggan ?>");
     <?php endforeach; ?>
 
     // Fungsi untuk memulai timer countdown
-    function startCountdownTimer(id, endTime) {
+    function startCountdownTimer(id, endTime, namaPelanggan) {
         var timerId;
 
         function updateCountdown() {
@@ -181,11 +181,16 @@
             if (distance <= 0) {
                 clearInterval(timerId); // Hentikan timer countdown
 
+                // Buat pengumuman dengan Text-to-Speech
+                announceFinish(namaPelanggan);
+
                 // Ambil ID transaksi dari hidden input
                 var hiddenId = document.getElementById('hidden_id_' + id).value;
 
                 // Redirect ke halaman status dengan id_transaksi sebagai parameter
-                window.location.href = "<?= base_url('Home/status') ?>/" + hiddenId;
+                setTimeout(function () {
+                    window.location.href = "<?= base_url('Home/status') ?>/" + hiddenId;
+                }, 5000); // Tunggu 5 detik sebelum redirect
             }
         }
 
@@ -195,7 +200,22 @@
         // Mulai countdown saat halaman dimuat
         updateCountdown();
     }
+
+    // Fungsi untuk pengumuman dengan Text-to-Speech
+    function announceFinish(namaPelanggan) {
+        var announcement = namaPelanggan + " duration has finished.";
+        var utterance = new SpeechSynthesisUtterance(announcement);
+        speechSynthesis.speak(utterance);
+    }
 </script>
+
+<?php foreach ($masih_bermain as $id_transaksi => $durasi): ?>
+    <!-- Hidden inputs untuk ID transaksi -->
+    <input type="hidden" id="hidden_id_<?= $id_transaksi ?>" value="<?= $id_transaksi ?>">
+    <!-- Elemen untuk menampilkan countdown -->
+    <div id="countdown_<?= $id_transaksi ?>"></div>
+<?php endforeach; ?>
+
 
 
 </div>
